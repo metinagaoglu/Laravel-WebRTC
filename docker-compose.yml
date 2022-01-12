@@ -1,0 +1,26 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    tty: true
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=myapp
+    ports:
+      - '5432:5432'
+  backend:
+    tty: true
+    image: metinagaoglu/php8_laravel:1.0
+    #command: "php app/artisan serve --host=0.0.0.0"
+    environment:
+      - DB_HOST=postgres
+      - DB_USERNAME=postgres
+      - DB_DATABASE=myapp
+      - DB_PASSWORD=postgres
+    depends_on:
+      - postgres
+    ports:
+      - '8080:8000'
+    volumes:
+      - './src/:/app/'
