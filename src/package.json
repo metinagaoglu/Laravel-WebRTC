@@ -24,6 +24,7 @@
         "vue-template-compiler": "^2.6.12"
     },
     "dependencies": {
+        "laravel-echo": "^1.11.3",
         "simple-peer": "^9.11.0"
     }
 }
