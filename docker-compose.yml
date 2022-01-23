@@ -9,6 +9,11 @@ services:
       - POSTGRES_DB=myapp
     ports:
       - '5432:5432'
+  soketi:
+    image: quay.io/soketi/soketi
+    tty: true
+    ports:
+      - '6001:6001'
   backend:
     tty: true
     image: metinagaoglu/php8_laravel:1.0
