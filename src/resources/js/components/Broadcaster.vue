@@ -2,11 +2,11 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 offset-md-2">
-                <button class="btn btn-success" @click="startStream">
+                <button class="btn btn-success" @click="startStream" v-if="isStartStream">
                     Start Stream</button>
                 <br />
                 <p v-if="isVisibleLink" class="my-5">
-                    Share the following streaming link:
+                    Share the following streaming link: {{ streamLink }}
                 </p>
                 <video autoplay ref="broadcaster"></video>
             </div>
@@ -27,13 +27,20 @@ export default {
         return {
             streamingPresenceChannel: null,
             isVisibleLink: false,
-            streamingUsers: []
+            isStartStream: true,
+            currentlyContactedUser: null,
+            streamingUsers: [],
+            allPeers: {}
         };
     },
     computed: {
         streamId() {
             //TODO: improve streamId generation code.
             return `${this.auth_user_id}randomstring`;
+        },
+        streamLink() {
+            //TODO: For now temp localhost url.
+            return `http://127.0.0.1:8080/streaming/${this.streamId}`;
         }
     },
     methods: {
@@ -42,6 +49,7 @@ export default {
             this.$refs.broadcaster.srcObject = stream;
             this.initializeStreamingChannel();
             this.isVisibleLink = true;
+            this.isStartStream = false;
         },
         initializeStreamingChannel() {
             this.streamingPresenceChannel = window.Echo.join(
@@ -51,10 +59,53 @@ export default {
             this.streamingPresenceChannel.here((users) => {
                 this.streamingUsers = users;
             });
-
+console.log(this.streamingPresenceChannel);
             this.streamingPresenceChannel.joining((user) => {
                 console.log('New User',user);
-            })
+                // if this new user is not already on the call, send your stream offer
+                const joiningUserIndex = this.streamingUsers.findIndex(
+                    (data) => data.id === user.id
+                );
+
+                console.log(joiningUserIndex);
+                if (joiningUserIndex < 0) {
+                    this.streamingUsers.push(user);
+
+                    this.currentlyContactedUser = user.id;
+
+                    this.$set(
+                        this.allPeers,
+                        `${user.id}`,
+                        this.peerCreator(
+                            this.$refs.broadcaster.srcObject,
+                            user,
+                            this.signalCallback
+                        )
+                    );
+
+                    this.allPeers[user.id].create();
+
+                    this.allPeers[user.id].initEvents();
+                }
+            })//joining
+
+            this.streamingPresenceChannel.leaving((user) => {
+                console.log(user.name , "Left");
+
+                this.allPeers[user.id].getPeer().destroy();
+
+                delete this.allPeers[user.id];
+
+                if (user.id === this.auth_user_id) {
+                    this.streamingUsers = [];
+                } else {
+                    const leavingUserIndex = this.streamingUsers.findIndex(
+                        (data) => data.id === user.id
+                    );
+
+                    this.streamingUsers.splice(leavingUserIndex,1);
+                }
+            });
         }
     },
 };
