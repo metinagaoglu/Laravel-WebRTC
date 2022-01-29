@@ -19,9 +19,12 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::middleware([\Illuminate\Auth\Middleware\Authenticate::class])->group(function () {
 
-Route::get('/streaming', 'App\Http\Controllers\WebRTCStreamingController@index');
-Route::get('/streaming/{streamId}', 'App\Http\Controllers\WebRTCStreamingController@consumer');
-Route::post('/stream-offer', 'App\Http\Controllers\WebRTCStreamingController@makeStreamOffer');
-Route::post('/stream-answer', 'App\Http\Controllers\WebRTCStreamingController@makeStreamAnswer');
+    Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
+
+    Route::get('/streaming', 'App\Http\Controllers\WebRTCStreamingController@index');
+    Route::get('/streaming/{streamId}', 'App\Http\Controllers\WebRTCStreamingController@consumer');
+    Route::post('/stream-offer', 'App\Http\Controllers\WebRTCStreamingController@makeStreamOffer');
+    Route::post('/stream-answer', 'App\Http\Controllers\WebRTCStreamingController@makeStreamAnswer');
+});
