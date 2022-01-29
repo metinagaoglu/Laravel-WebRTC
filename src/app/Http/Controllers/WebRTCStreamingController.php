@@ -15,7 +15,7 @@ class WebRTCStreamingController extends Controller
 
     public function consumer(Request $request, $streamId)
     {
-        return view('video-broadcast', ['type' => 'consumer', 'streamId' => $streamId, 'id' => Auth::id()]);
+        return view('video.consumer', ['type' => 'consumer', 'streamId' => $streamId, 'id' => Auth::id()]);
     }
 
     public function makeStreamOffer(Request $request)
