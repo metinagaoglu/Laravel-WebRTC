@@ -22,6 +22,9 @@ export default {
     name: "Broadcaster",
     props: [
         "auth_user_id",
+        "turn_url",
+        "turn_username",
+        "turn_credential",
     ],
     data() {
         return {
@@ -48,6 +51,7 @@ export default {
             const stream = await getPermissions();
             this.$refs.broadcaster.srcObject = stream;
             this.initializeStreamingChannel();
+            this.initializeSignalAnswerChannel();
             this.isVisibleLink = true;
             this.isStartStream = false;
         },
@@ -59,7 +63,7 @@ export default {
             this.streamingPresenceChannel.here((users) => {
                 this.streamingUsers = users;
             });
-console.log(this.streamingPresenceChannel);
+
             this.streamingPresenceChannel.joining((user) => {
                 console.log('New User',user);
                 // if this new user is not already on the call, send your stream offer
@@ -106,6 +110,90 @@ console.log(this.streamingPresenceChannel);
                     this.streamingUsers.splice(leavingUserIndex,1);
                 }
             });
+        },
+        initializeSignalAnswerChannel() {
+            window.Echo.private(`stream-signal-channel.${this.auth_user_id}`).listen(
+                "StreamAnswer",
+                ({data}) => {
+                    console.log("Signal answer from private channel");
+
+                    if (data.answer.renegotiate) {
+                        console.log("renegotiate");
+                    }
+
+                    //Session description protocol
+                    if(data.answer.sdp) {
+                        const updateSignal = {
+                            ...data.answer,
+                            sdp: `${data.answer.sdp}\n`,
+                        };
+
+                        this.allPeers[this.currentlyContactedUser]
+                            .getPeer()
+                            .signal(updateSignal);
+                    }
+                }
+            );
+        },//initializeSignalAnswerChannel
+        peerCreator(stream, user, signalCallback) {
+            let peer;
+            return {
+                create: () => {
+                    peer = new Peer({
+                        initiator: true,
+                        trickle: false,
+                        stream: stream,
+                        config: {
+                            iceServers: [
+                                {
+                                    urls: "stun.l.google.com:19302"
+                                }
+                            ]
+                        }
+                    });
+                },
+                getPeer: () => peer,
+                initEvents: () => {
+                    peer.on("signal",(data) => {
+                        //send offer
+                        signalCallback(data, user);
+                    });
+
+                    peer.on("stream",(stream) => {
+                        console.log("onStream");
+                    });
+
+                    peer.on("track", (track, stream) => {
+                        console.log("onTrack");
+                    });
+
+                    peer.on("connect", () => {
+                        console.log("Broadcaster Peer connected");
+                    });
+
+                    peer.on("close", () => {
+                        console.log("Broadcaster Peer closed");
+                    });
+
+                    peer.on("error", (err) => {
+                        console.log("handle error gracefully");
+                    });
+                },
+            };
+        },
+        signalCallback(offer, user) {
+            axios
+                .post("/stream-offer",{
+                    broadcaster: this.auth_user_id,
+                    receiver: user,
+                    offer,
+                })
+                .then((res) => {
+                    console.log(res);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
         }
     },
 };
