@@ -8,6 +8,8 @@ It is a Laravel project that I learned and implemented WebRTC technology.
 
 **Client:** Vue.js
 
+**NPM library:** [Simple Peer](https://github.com/feross/simple-peer)
+
 **Server:** PHP8, Laravel 8 , Soketi
 
 **Database:** PostgreSQL
@@ -44,5 +46,7 @@ Start the server manually for now
 [Soketi](Soketi)
 
 [WebRTC Guide](https://webrtc.org/getting-started/overview)
+
+[Peer.js](https://peerjs.com/)
 
 [Laravel Websocket](https://beyondco.de/docs/laravel-websockets/getting-started/installation)

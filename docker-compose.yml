@@ -10,10 +10,12 @@ services:
     ports:
       - '5432:5432'
   soketi:
-    image: quay.io/soketi/soketi
+    image: quay.io/soketi/soketi:0.17-16-alpine
     tty: true
     ports:
       - '6001:6001'
+    environment:
+      - DEFAULT_APP_KEY=laravel-webrtc-key
   backend:
     tty: true
     image: metinagaoglu/php8_laravel:1.0
@@ -25,6 +27,7 @@ services:
       - DB_PASSWORD=postgres
     depends_on:
       - postgres
+      - soketi
     ports:
       - '8080:8000'
     volumes:

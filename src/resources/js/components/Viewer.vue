@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import Peer from "simple-peer";
 import Echo from "laravel-echo";
+import Peer from "simple-peer";
 export default {
     name: "Viewer",
     props: [
@@ -44,10 +44,11 @@ export default {
             this.streamingPresenceChannel = window.Echo.join(
                 `streaming-channel.${this.stream_id}`
             );
+            console.log(`streaming-channel.${this.stream_id}`);
         },
 
         initializeSignalOfferChannel() {
-            console.log("Want to offer init");
+            console.log(`stream-signal-channel.${this.auth_user_id}`);
 
             window.Echo.private(`stream-signal-channel.${this.auth_user_id}`)
                 .listen(
