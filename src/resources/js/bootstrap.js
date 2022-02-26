@@ -30,7 +30,6 @@ window.Echo = new Echo({
     wsHost: "localhost",
     wsPort: 6001,
     forceTLS: false,
-    encrypted: true,
     disableStats: true,
     enabledTransports: ['ws'],
 });

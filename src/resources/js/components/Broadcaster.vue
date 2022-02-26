@@ -16,7 +16,7 @@
 
 <script>
 import { getPermissions } from "../helpers";
-import Echo from "laravel-echo";
+
 import Peer from "simple-peer";
 export default {
     name: "Broadcaster",
@@ -60,7 +60,9 @@ export default {
                 `streaming-channel.${this.streamId}`
             );
 
+            //The "here" callback will be executed immediately once the channel is joined successfully,
             this.streamingPresenceChannel.here((users) => {
+                console.log("Join successfully");
                 this.streamingUsers = users;
             });
 
@@ -146,7 +148,7 @@ export default {
                         config: {
                             iceServers: [
                                 {
-                                    urls: "stun.l.google.com:19302"
+                                    urls: "stun:stun1.l.google.com:19302",
                                 }
                             ]
                         }
@@ -176,6 +178,7 @@ export default {
                     });
 
                     peer.on("error", (err) => {
+                        console.log(err);
                         console.log("handle error gracefully");
                     });
                 },

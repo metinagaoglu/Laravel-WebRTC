@@ -15,7 +15,9 @@ services:
     ports:
       - '6001:6001'
     environment:
+      - DEFAULT_APP_ID=laravel-webrtc-id
       - DEFAULT_APP_KEY=laravel-webrtc-key
+      - DEFAULT_APP_SECRET=laravel-webrtc-secret
   backend:
     tty: true
     image: metinagaoglu/php8_laravel:1.0

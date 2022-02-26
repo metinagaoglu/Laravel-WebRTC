@@ -5276,9 +5276,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../helpers */ "./resources/js/helpers.js");
-/* harmony import */ var laravel_echo__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! laravel-echo */ "./node_modules/laravel-echo/dist/echo.js");
-/* harmony import */ var simple_peer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! simple-peer */ "./node_modules/simple-peer/index.js");
-/* harmony import */ var simple_peer__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(simple_peer__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var simple_peer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! simple-peer */ "./node_modules/simple-peer/index.js");
+/* harmony import */ var simple_peer__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(simple_peer__WEBPACK_IMPORTED_MODULE_2__);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -5307,7 +5306,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -5368,8 +5366,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     initializeStreamingChannel: function initializeStreamingChannel() {
       var _this2 = this;
 
-      this.streamingPresenceChannel = window.Echo.join("streaming-channel.".concat(this.streamId));
+      this.streamingPresenceChannel = window.Echo.join("streaming-channel.".concat(this.streamId)); //The "here" callback will be executed immediately once the channel is joined successfully,
+
       this.streamingPresenceChannel.here(function (users) {
+        console.log("Join successfully");
         _this2.streamingUsers = users;
       });
       this.streamingPresenceChannel.joining(function (user) {
@@ -5438,13 +5438,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var peer;
       return {
         create: function create() {
-          peer = new (simple_peer__WEBPACK_IMPORTED_MODULE_3___default())({
+          peer = new (simple_peer__WEBPACK_IMPORTED_MODULE_2___default())({
             initiator: true,
             trickle: false,
             stream: stream,
             config: {
               iceServers: [{
-                urls: "stun.l.google.com:19302"
+                urls: "stun:stun1.l.google.com:19302"
               }]
             }
           });
@@ -5470,6 +5470,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             console.log("Broadcaster Peer closed");
           });
           peer.on("error", function (err) {
+            console.log(err);
             console.log("handle error gracefully");
           });
         }
@@ -5537,9 +5538,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var laravel_echo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! laravel-echo */ "./node_modules/laravel-echo/dist/echo.js");
-/* harmony import */ var simple_peer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! simple-peer */ "./node_modules/simple-peer/index.js");
-/* harmony import */ var simple_peer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(simple_peer__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var simple_peer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! simple-peer */ "./node_modules/simple-peer/index.js");
+/* harmony import */ var simple_peer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(simple_peer__WEBPACK_IMPORTED_MODULE_0__);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -5561,7 +5561,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 
-
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Viewer",
   props: ["auth_user_id", "stream_id", "turn_url", "turn_username", "turn_credential"],
@@ -5574,19 +5573,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   methods: {
     joinBroadcast: function joinBroadcast() {
-      console.log("Want to join");
       this.initializeStreamingChannel();
       this.initializeSignalOfferChannel();
     },
     initializeStreamingChannel: function initializeStreamingChannel() {
-      console.log("Want to join init");
       this.streamingPresenceChannel = window.Echo.join("streaming-channel.".concat(this.stream_id));
-      console.log("streaming-channel.".concat(this.stream_id));
     },
     initializeSignalOfferChannel: function initializeSignalOfferChannel() {
       var _this = this;
 
-      console.log("stream-signal-channel.".concat(this.auth_user_id));
       window.Echo["private"]("stream-signal-channel.".concat(this.auth_user_id)).listen("StreamOffer", function (_ref) {
         var data = _ref.data;
         console.log("Signal offer from private channel");
@@ -5596,12 +5591,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     createViewerPeer: function createViewerPeer(offer, broadcaster) {
-      var peer = new (simple_peer__WEBPACK_IMPORTED_MODULE_1___default())({
+      var peer = new (simple_peer__WEBPACK_IMPORTED_MODULE_0___default())({
         initiator: false,
         trickle: false,
         config: {
           iceServers: [{
-            urls: "stun.l.google.com:19302"
+            urls: "stun:stun1.l.google.com:19302"
           }]
         }
       }); //Add a RTCRtpTransceiver to the connection. Can be used to add transceivers before adding tracks. Automatically called as neccesary by addTrack.
@@ -5740,10 +5735,9 @@ window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/d
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
   key: 'laravel-webrtc-key',
-  wsHost: "localhost",
+  wsHost: "192.168.1.42",
   wsPort: 6001,
   forceTLS: false,
-  encrypted: true,
   disableStats: true,
   enabledTransports: ['ws']
 }); // window.Pusher = require('pusher-js');

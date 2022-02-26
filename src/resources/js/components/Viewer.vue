@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import Echo from "laravel-echo";
 import Peer from "simple-peer";
 export default {
     name: "Viewer",
@@ -33,22 +32,17 @@ export default {
     },
     methods: {
         joinBroadcast() {
-            console.log("Want to join");
             this.initializeStreamingChannel();
             this.initializeSignalOfferChannel();
         },
 
         initializeStreamingChannel() {
-            console.log("Want to join init");
-
             this.streamingPresenceChannel = window.Echo.join(
                 `streaming-channel.${this.stream_id}`
             );
-            console.log(`streaming-channel.${this.stream_id}`);
         },
 
         initializeSignalOfferChannel() {
-            console.log(`stream-signal-channel.${this.auth_user_id}`);
 
             window.Echo.private(`stream-signal-channel.${this.auth_user_id}`)
                 .listen(
@@ -67,7 +61,7 @@ export default {
                 config: {
                     iceServers: [
                         {
-                            urls: "stun.l.google.com:19302",
+                            urls: "stun:stun1.l.google.com:19302",
                         }
                     ],
                 },

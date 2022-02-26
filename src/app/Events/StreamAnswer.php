@@ -4,10 +4,11 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class StreamAnswer
+class StreamAnswer implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -31,6 +32,6 @@ class StreamAnswer
     public function broadcastOn()
     {
         // stream offer can broadcast on a private channel
-        return new PrivateChannel('stream-signal-channel.' . $this->data['receiver']['id']);
+        return new PrivateChannel('stream-signal-channel.' . $this->data['broadcaster']);
     }
 }
